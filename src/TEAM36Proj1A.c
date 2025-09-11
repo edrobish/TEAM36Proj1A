@@ -10,8 +10,8 @@
 
 #define LED1 0
 #define LED2 1
-#define LED3 2
-#define LED4 3
+#define LED3 4
+#define LED4 5
 #define PORT GPIOA
 #define TIME 500
 // LEDs are on pins PA0-PA5, but if we want to change this #define statements are easily modifiable
