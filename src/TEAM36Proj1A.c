@@ -18,7 +18,10 @@
 void initialize(void) {
     RCC->AHB1ENR |= (1 << 0);
     PORT->MODER &= ~(0x3 << (LED1*2)) | (0x3 << (LED2*2)) | (0x3 << (LED3*2)) | (0x3 << (LED4*2));
+    PORT->MODER &= ~(0x1 << (LED1*2)) | (0x1 << (LED2*2)) | (0x1 << (LED3*2)) | (0x1 << (LED4*2));
 }
+
+// add delay function
 
 int main(void) {
     initialize();
