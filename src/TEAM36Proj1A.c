@@ -11,15 +11,19 @@
 #define LED1 0
 #define LED2 1
 #define LED3 4
-#define LED4 5
-#define PORT GPIOA
+#define LED4 0
+#define PORT1 GPIOA
+#define PORT2 GPIOB
 #define TIME 500
 // LEDs are on pins PA0-PA5, but if we want to change this #define statements are easily modifiable
 
 void initialize(void) {
     RCC->AHB1ENR |= (1 << 0);
-    PORT->MODER &= ~(0x3 << (LED1*2)) | (0x3 << (LED2*2)) | (0x3 << (LED3*2)) | (0x3 << (LED4*2));
-    PORT->MODER |= (0x1 << (LED1*2)) | (0x1 << (LED2*2)) | (0x1 << (LED3*2)) | (0x1 << (LED4*2));
+    RCC->AHB1ENR |= (1 << 1);
+    PORT1->MODER &= ~(0x3 << (LED1*2)) | (0x3 << (LED2*2)) | (0x3 << (LED3*2));
+    PORT1->MODER |= (0x1 << (LED1*2)) | (0x1 << (LED2*2)) | (0x1 << (LED3*2));
+    PORT2->MODER &= ~(0x3 << (LED4*2));
+    PORT2->MODER |= (0x1 << (LED4*2));
 }
 
 void systick(void) {
@@ -43,17 +47,17 @@ int main(void) {
     initialize();
     systick();
     while(1) { // first 16 bits enable a pin, the rest reset/disable
-        PORT->BSRR |= (1 << LED1);
+        PORT1->BSRR |= (1 << LED1);
         delay(TIME);
-        PORT->BSRR |= (1 << (LED1+16));
-        PORT->BSRR |= (1 << LED2);
+        PORT1->BSRR |= (1 << (LED1+16));
+        PORT1->BSRR |= (1 << LED2);
         delay(TIME);
-        PORT->BSRR |= (1 << (LED2+16));
-        PORT->BSRR |= (1 << LED3);
+        PORT1->BSRR |= (1 << (LED2+16));
+        PORT1->BSRR |= (1 << LED3);
         delay(TIME);
-        PORT->BSRR |= (1 << (LED3+16));
-        PORT->BSRR |= (1 << LED4);
+        PORT1->BSRR |= (1 << (LED3+16));
+        PORT2->BSRR |= (1 << LED4);
         delay(TIME);
-        PORT->BSRR |= (1 << (LED4+16));
+        PORT2->BSRR |= (1 << (LED4+16));
     } // could make a helper function for on/off but probably unnecessary
 }
