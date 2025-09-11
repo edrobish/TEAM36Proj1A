@@ -13,30 +13,47 @@
 #define LED3 2
 #define LED4 3
 #define PORT GPIOA
+#define TIME 500
 // LEDs are on pins PA0-PA5, but if we want to change this #define statements are easily modifiable
 
 void initialize(void) {
     RCC->AHB1ENR |= (1 << 0);
     PORT->MODER &= ~(0x3 << (LED1*2)) | (0x3 << (LED2*2)) | (0x3 << (LED3*2)) | (0x3 << (LED4*2));
-    PORT->MODER &= ~(0x1 << (LED1*2)) | (0x1 << (LED2*2)) | (0x1 << (LED3*2)) | (0x1 << (LED4*2));
+    PORT->MODER |= (0x1 << (LED1*2)) | (0x1 << (LED2*2)) | (0x1 << (LED3*2)) | (0x1 << (LED4*2));
 }
 
-// add delay function
+void systick(void) {
+    SysTick->LOAD = 15999;
+    SysTick->VAL = 0;
+    SysTick->CTRL = SysTick_CTRL_CLKSOURCE_Msk | SysTick_CTRL_ENABLE_Msk;
+}
+/* 16 MHz clock, each tick 1/16000000 seconds*16000 = 1 ms, so this timer counts
+from 15999 down to 0 per tick to simulate 1 ms*/
+
+void delay(uint32_t ms) {
+    for (uint32_t i = 0; i < ms; i++) {
+        while((SysTick->CTRL & SysTick_CTRL_COUNTFLAG_Msk) == 0) { }
+    }
+}
+/*While loop spins until COUNTFLAG is 1, which indicates SysTick has elapsed 1 ms for every ms in
+uint32_t ms
+The  comparison pulls the COUNTFLAG bit out of the CTRL register*/
 
 int main(void) {
     initialize();
+    systick();
     while(1) { // first 16 bits enable a pin, the rest reset/disable
         PORT->BSRR |= (1 << LED1);
-        //delay
+        delay(TIME);
         PORT->BSRR |= (1 << (LED1+16));
         PORT->BSRR |= (1 << LED2);
-        //delay
+        delay(TIME);
         PORT->BSRR |= (1 << (LED2+16));
         PORT->BSRR |= (1 << LED3);
-        //delay
+        delay(TIME);
         PORT->BSRR |= (1 << (LED3+16));
         PORT->BSRR |= (1 << LED4);
-        //delay
+        delay(TIME);
         PORT->BSRR |= (1 << (LED4+16));
     } // could make a helper function for on/off but probably unnecessary
 }
