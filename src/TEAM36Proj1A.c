@@ -15,9 +15,13 @@
 #define PORT GPIOA
 // LEDs are on pins PA0-PA5, but if we want to change this #define statements are easily modifiable
 
-int main(void) {
+void initialize(void) {
     RCC->AHB1ENR |= (1 << 0);
-    // set modes to 
+    PORT->MODER &= ~(0x3 << (LED1*2)) | (0x3 << (LED2*2)) | (0x3 << (LED3*2)) | (0x3 << (LED4*2));
+}
+
+int main(void) {
+    initialize();
     while(1) { // first 16 bits enable a pin, the rest reset/disable
         PORT->BSRR |= (1 << LED1);
         //delay
