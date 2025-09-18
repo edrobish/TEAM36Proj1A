@@ -15,14 +15,14 @@
 #define PORT1 GPIOA
 #define PORT2 GPIOB
 #define TIME 500
-// LEDs are on pins PA0-PA5, but if we want to change this #define statements are easily modifiable
+//Pins PA0, PA1, PA4 and PB0
 
 void initialize(void) {
     RCC->AHB1ENR |= (1 << 0);
-    RCC->AHB1ENR |= (1 << 1);
-    PORT1->MODER &= ~(0x3 << (LED1*2)) | (0x3 << (LED2*2)) | (0x3 << (LED3*2));
-    PORT1->MODER |= (0x1 << (LED1*2)) | (0x1 << (LED2*2)) | (0x1 << (LED3*2));
-    PORT2->MODER &= ~(0x3 << (LED4*2));
+    RCC->AHB1ENR |= (1 << 1); // enables clock for GPIOs
+    PORT1->MODER &= ~((0x3 << (LED1*2)) | (0x3 << (LED2*2)) | (0x3 << (LED3*2))); // resets these modes
+    PORT1->MODER |= (0x1 << (LED1*2)) | (0x1 << (LED2*2)) | (0x1 << (LED3*2));  // sets these pins to GPIO
+    PORT2->MODER &= ~((0x3 << (LED4*2)));
     PORT2->MODER |= (0x1 << (LED4*2));
 }
 
@@ -59,5 +59,5 @@ int main(void) {
         PORT2->BSRR |= (1 << LED4);
         delay(TIME);
         PORT2->BSRR |= (1 << (LED4+16));
-    } // could make a helper function for on/off but probably unnecessary
+    }
 }
